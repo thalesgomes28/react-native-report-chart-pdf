@@ -10,8 +10,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "chart.js": "^2.9.4",
     "react": "16.13.1",
-    "react-native": "0.63.4"
+    "react-native": "0.63.4",
+    "react-native-html-to-pdf": "^0.9.1"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",

@@ -1,114 +1,117 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+// Example to Make PDF in React Native from HTML Text
+// https://aboutreact.com/make-pdf-in-react-native-from-html-text/
 
-import React from 'react';
+// Import React
+import React, {useState} from 'react';
+// Import required components
 import {
   SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
   Text,
-  StatusBar,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  Image,
+  PermissionsAndroid,
+  Platform,
 } from 'react-native';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+// Import HTML to PDF
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
-const App: () => React$Node = () => {
+import htmlfile from "./HtmlTemplate"
+
+
+const App = () => {
+  const [filePath, setFilePath] = useState('');
+
+  const isPermitted = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'External Storage Write Permission',
+            message: 'App needs access to Storage data',
+          },
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        alert('Write permission err', err);
+        return false;
+      }
+    } else {
+      return true;
+    }
+  };
+
+
+
+  const createPDF = async () => {
+    if (await isPermitted()) {
+      let options = {
+        //Content to print
+        html: htmlfile,
+        //File Name
+        fileName: 'test2',
+        //File directory
+        directory: 'Downloads',
+      };
+      let file = await RNHTMLtoPDF.convert(options);
+      console.log(file.filePath);
+      setFilePath(file.filePath);
+    }
+  };
+
   return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
+    <SafeAreaView style={{flex: 1}}>
+      <Text style={styles.titleText}>
+        Example to Make PDF in React Native from HTML Text
+      </Text>
+      <View style={styles.container}>
+        <TouchableOpacity onPress={createPDF}>
+          <View>
+            <Image
+              //We are showing the Image from online
+              source={{
+                uri:
+                  'https://raw.githubusercontent.com/AboutReact/sampleresource/master/pdf.png',
+              }}
+              style={styles.imageStyle}
+            />
+            <Text style={styles.textStyle}>Create PDF</Text>
           </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
+        </TouchableOpacity>
+        <Text style={styles.textStyle}>{filePath}</Text>
+      </View>
+    </SafeAreaView>
   );
 };
 
+export default App;
+
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  container: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#fff',
+    alignItems: 'center',
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
+  titleText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    paddingVertical: 20,
   },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
+  textStyle: {
     fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
+    padding: 10,
+    color: 'black',
+    textAlign: 'center',
   },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
+  imageStyle: {
+    width: 150,
+    height: 150,
+    margin: 5,
+    resizeMode: 'stretch',
   },
 });
-
-export default App;

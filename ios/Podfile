@@ -8,6 +8,8 @@ target 'ReportChartPDF' do
 
   use_react_native!(:path => config["reactNativePath"])
 
+  pod 'react-native-html-to-pdf-rd', :path => '../node_modules/react-native-html-to-pdf-rd'
+
   target 'ReportChartPDFTests' do
     inherit! :complete
     # Pods for testing
